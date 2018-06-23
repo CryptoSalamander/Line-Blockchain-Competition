@@ -1,0 +1,346 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script src="./node_modules/web3/dist/web3.min.js"></script>
+
+</head>
+<body>
+    <div class="container" style = "text-align:center;">
+        <h1>Pedigree Regist Page</h1>
+        <h2>-------------------------------------------</h2>
+
+        <label for="name" class="col-lg-2 control-label">Animal Type { None : 0, Dog : 1, Cat : 2, Horse : 3 }</label>
+        <input id="animal" type="text">
+
+        <label for="name" class="col-lg-2 control-label">Species</label>
+        <input id="species" type="text">
+
+        <label for="name" class="col-lg-2 control-label">Picture </label>
+        <form id="imgur">
+            <input type="file" align="center" class="imgur" accept="image/*" data-max-size="5000" />
+        </form>
+
+        <label for="name" class="col-lg-2 control-label">Name</label>
+        <input id="Name" type="text">
+
+        <label for="name" class="col-lg-2 control-label">masterID</label>
+        <input id="masterID" type="text">
+
+        <label for="name" class="col-lg-2 control-label">CA { None : 0, KKF : 1, FCI : 2, KRA : 3 }</label>
+        <input id="CA" type="text">
+
+        <label for="name" class="col-lg-2 control-label">Mother ID</label>
+        <input id="MID" type="text">
+
+        <label for="name" class="col-lg-2 control-label">Father ID</label>
+        <input id="FID" type="text">
+
+        <center>
+            <button id="button">Registed</button>
+        </center>
+
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+    <script>
+    var $file_url;
+$("document").ready(function() {
+  $("input[type=file]").on("change", function() {
+    var $files = $(this).get(0).files;
+    if ($files.length) {
+      // Reject big files
+      if ($files[0].size > $(this).data("max-size") * 1024) {
+        console.log("Please select a smaller file");
+        return false;
+      }
+
+      // Replace ctrlq with your own API key
+      var apiUrl = "https://api.imgur.com/3/image";
+      var apiKey = "f84056b2097514c";
+
+      var formData = new FormData();
+      formData.append("image", $files[0]);
+
+      var settings = {
+        async: true,
+        crossDomain: true,
+        url: apiUrl,
+        method: "POST",
+        datatype: "json",
+        headers: {
+          Authorization: "Client-ID " + apiKey
+        },
+        processData: false,
+        contentType: false,
+        data: formData,
+        beforeSend: function(xhr) {
+          console.log("Uploading | 上传中");
+        },
+        success: function(res) {
+          console.log(res.data.link);
+          file_url = res.data.link;
+          $("body").append('<img src="' + res.data.link + '" />');
+        },
+        error: function() {
+          alert("Failed");
+        }
+      };
+      $.ajax(settings).done(function(response) {
+        console.log("Done");
+      });
+    }
+  });
+});
+if (typeof web3 !== "undefined") {
+  web3 = new Web3(web3.currentProvider);
+} else {
+  // set the provider you want from Web3.providers
+  web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+}
+web3.eth.defaultAccount = web3.eth.accounts[0];
+var CoursetroContract = web3.eth.contract([
+  {
+    constant: false,
+    inputs: [
+      {
+        name: "_PedigreeID",
+        type: "uint256"
+      },
+      {
+        name: "_changeID",
+        type: "uint256"
+      }
+    ],
+    name: "changeMaster",
+    outputs: [],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    constant: false,
+    inputs: [],
+    name: "constuctor",
+    outputs: [],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    constant: false,
+    inputs: [
+      {
+        name: "_nation",
+        type: "string"
+      },
+      {
+        name: "_name",
+        type: "string"
+      },
+      {
+        name: "_address",
+        type: "string"
+      },
+      {
+        name: "_phone",
+        type: "string"
+      },
+      {
+        name: "_ID",
+        type: "address"
+      }
+    ],
+    name: "RegistMaster",
+    outputs: [
+      {
+        name: "index",
+        type: "uint256"
+      }
+    ],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    constant: false,
+    inputs: [
+      {
+        name: "_animal",
+        type: "uint8"
+      },
+      {
+        name: "_species",
+        type: "string"
+      },
+      {
+        name: "_picURL",
+        type: "string"
+      },
+      {
+        name: "_name",
+        type: "string"
+      },
+      {
+        name: "_masterID",
+        type: "uint256"
+      },
+      {
+        name: "_CA",
+        type: "uint8"
+      },
+      {
+        name: "_mID",
+        type: "uint256"
+      },
+      {
+        name: "_fID",
+        type: "uint256"
+      }
+    ],
+    name: "RegistPedigree",
+    outputs: [
+      {
+        name: "index",
+        type: "uint256"
+      }
+    ],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: "getIndex",
+    outputs: [
+      {
+        name: "_numPedigrees",
+        type: "uint256"
+      },
+      {
+        name: "_numMasters",
+        type: "uint256"
+      }
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    constant: true,
+    inputs: [
+      {
+        name: "_index",
+        type: "uint256"
+      }
+    ],
+    name: "GetMaster",
+    outputs: [
+      {
+        name: "_nation",
+        type: "string"
+      },
+      {
+        name: "_name",
+        type: "string"
+      },
+      {
+        name: "_email",
+        type: "string"
+      },
+      {
+        name: "_phone",
+        type: "string"
+      },
+      {
+        name: "_ID",
+        type: "address"
+      }
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    constant: true,
+    inputs: [
+      {
+        name: "_index",
+        type: "uint256"
+      }
+    ],
+    name: "GetPedigree",
+    outputs: [
+      {
+        name: "_animal",
+        type: "uint8"
+      },
+      {
+        name: "_species",
+        type: "string"
+      },
+      {
+        name: "_picURL",
+        type: "string"
+      },
+      {
+        name: "_name",
+        type: "string"
+      },
+      {
+        name: "_masterID",
+        type: "uint256"
+      },
+      {
+        name: "_CA",
+        type: "uint8"
+      },
+      {
+        name: "_mID",
+        type: "uint256"
+      },
+      {
+        name: "_fID",
+        type: "uint256"
+      },
+      {
+        name: "_onsale",
+        type: "bool"
+      }
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function"
+  }
+]);
+var Coursetro = CoursetroContract.at(
+  "0xe7a3181e9b26d36e0f4de6a2186715bdc08396c9"
+);
+console.log(Coursetro);
+$("#button").click(function() {
+  Coursetro.RegistPedigree(
+    $("#animal").val(),
+    $("#species").val(),
+    "https://i.pinimg.com/170x/0e/79/80/0e7980e77ef14293f8307ff41fca795d.jpg",
+    $("#Name").val(),
+    $("#masterID").val(),
+    $("#CA").val(),
+    $("#MID").val(),
+    $("#FID").val(),
+    { from: web3.eth.accounts[0], gas: 3000000 }
+  );
+});
+</script>
+
+</body>
+</html>

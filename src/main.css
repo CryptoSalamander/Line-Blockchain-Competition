@@ -1,0 +1,50 @@
+body {
+  background-color: #f0f0f0;
+  padding: 2em;
+  font-family: "Raleway", "Source Sans Pro", "Arial";
+}
+.container {
+  width: 50%;
+  margin: 0 auto;
+}
+label {
+  display: block;
+  margin-bottom: 10px;
+}
+input {
+  padding: 10px;
+  width: 50%;
+  margin-bottom: 1em;
+}
+button {
+  margin: 2em 0;
+  padding: 1em 4em;
+  display: block;
+}
+a.no-uline {
+  text-decoration: none;
+}
+#instructor {
+  padding: 1em;
+  background-color: #fff;
+  margin: 1em 0;
+}
+
+.layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+.layer .content {
+  display: inline-block;
+  vertical-align: middle;
+}
+.layer .blank {
+  display: inline-block;
+  width: 0;
+  height: 100%;
+  vertical-align: middle;
+}
