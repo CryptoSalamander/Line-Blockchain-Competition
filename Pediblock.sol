@@ -3,104 +3,102 @@
 /// Ver 0.1
 pragma solidity ^0.4.0;
 contract Pediblock{
-    struct Postman{
-        string code;
-        string name;
-        string phone;
-    }
-    struct Delivery {
-        string code;
-        uint postman_index;
-        uint longitude;
-        uint latitude;
-        uint temperature;
-        uint humidity;
-        uint damage;
-        address to;
-        bool damaged;
-        bool success;
-        bool unnormal;
-    }
-    mapping(uint => Delivery) deliverys;
-    mapping(uint => Postman) postmans;
-    uint numPostmans;
-    uint numDeliverys;
-    address owner;
     
-    function constuctor() public {
-    numPostmans = 1;
-    numDeliverys = 1;
-    owner = msg.sender;
-    }
-    
-    function GetPostman(uint _index) public constant returns (string _mycode, string _name, string _phone) {
-        _mycode = postmans[_index].code;
-        _name = postmans[_index].name;
-        _phone = postmans[_index].phone;
-    }
-    function RegistPostman(string _code,string _name,string _phone) public returns(uint index){
-        if(msg.sender != owner)
-        {
-            return;
-        }
-        index = numPostmans++;
-        postmans[index] = Postman(_code,_name,_phone);
-    }
-    
-    function NewDelivery(string _code,address _to) public returns(uint index){
-        if(msg.sender != owner)
-        {
-            return;
-        }
-        index = numDeliverys++;
-        deliverys[index] = Delivery(_code,0,0,0,0,0,0,_to,false,false,false);
-    }
-    
-    function GetDelivery(uint _index) public constant returns (string _mycode, uint _postman_index,uint _longi, uint _lati,uint _temperature,uint _humidity,bool _damaged){
-        _mycode = deliverys[_index].code;
-        _postman_index = deliverys[_index].postman_index;
-        _longi = deliverys[_index].longitude;
-        _lati = deliverys[_index].latitude;
-        _temperature = deliverys[_index].temperature;
-        _humidity = deliverys[_index].humidity;
-        _damaged = deliverys[_index].damaged;
-        
-    }
-    
-    function SetGPS(uint _index,uint longitude, uint latitude) public{
-        deliverys[_index].longitude = longitude;
-        deliverys[_index].latitude = latitude;
-    }
-    
-    function SetTemperature(uint _index,uint temperature) public{
-        if(temperature > 30 || temperature < 10)
-        {
-            deliverys[_index].unnormal = true;
-        }
-        deliverys[_index].temperature = temperature;
-    }
-    
-    function SetHumidity(uint _index, uint humidity) public{
-        if(humidity > 50)
-        {
-            deliverys[_index].unnormal = true;
-        }
-        deliverys[_index].humidity = humidity;
-    }
-    
-    function SetDamage(uint _index, uint damage) public{
-        if(damage > 50)
-        {
-            deliverys[_index].damaged = true;
-        }
-        deliverys[_index].damage = damage;
-    }
-    
-    function DeliveryComplete(uint _index) public{
-        if(msg.sender != deliverys[_index].to)
-        {
-            return;
-        }
-        deliverys[_index].success = true;
-    }
+   enum AnimalType { None, Dog, Cat, Horse }
+   enum CAList { None, KKF, FCI, KRA }
+   struct Pedigree{
+       uint index;
+       AnimalType animal;
+       string species;
+       string picURL;
+       string name;
+       uint masterID;
+       CAList CA;
+       uint mID;
+       uint fID;
+       bool onsale;
+   }
+   
+   struct Master{
+       uint index;
+       string nation;
+       string name;
+       string email;
+       string phone;
+       address ID;
+   }
+   
+   mapping(uint => Pedigree) pedigrees;
+   mapping(uint => Master) masters;
+   uint numPedigrees;
+   uint numMasters;
+   address owner;
+
+   function constuctor() public {
+   numPedigrees = 1;
+   numMasters = 1;
+   owner = msg.sender;
+   }
+
+   function GetPedigree(uint _index) public constant returns (AnimalType _animal, string _species, string _picURL, string _name, uint _masterID, CAList _CA, uint _mID, uint _fID, bool _onsale) {
+     _animal = pedigrees[_index].animal;
+     _species = pedigrees[_index].species;
+     _picURL = pedigrees[_index].picURL;
+     _name = pedigrees[_index].name;
+     _masterID = pedigrees[_index].masterID;
+     _CA = pedigrees[_index].CA;
+     _mID = pedigrees[_index].mID;
+     _fID = pedigrees[_index].fID;
+     _onsale = pedigrees[_index].onsale;
+   }
+   function RegistPedigree(AnimalType _animal, string _species, string _picURL, string _name, uint _masterID, CAList _CA, uint _mID, uint _fID) public returns(uint index){
+       if(msg.sender != owner)
+       {
+           return;
+       }
+       index = numPedigrees++;
+       pedigrees[index] = Pedigree(index,_animal,_species,_picURL,_name,_masterID,_CA,_mID,_fID,false);
+   }
+   
+   function RegistMaster(string _nation, string _name, string _address, string _phone,address _ID) public returns(uint index){
+       if(msg.sender != owner)
+       {
+           return;
+       }
+       index = numMasters++;
+       masters[index] = Master(index,_nation,_name,_address,_phone,_ID);
+       
+   }
+
+   function GetMaster(uint _index) public constant returns (string _nation, string _name, string _email, string _phone, address _ID){
+      /* _nation = masters[pedigrees[_index].masterID].nation;
+       _name = masters[pedigrees[_index].masterID].name;
+       _email = masters[pedigrees[_index].masterID].email;
+       _phone = masters[pedigrees[_index].masterID].phone;
+       _ID = masters[pedigrees[_index].masterID].ID; */
+       _nation = masters[_index].nation;
+       _name = masters[_index].name;
+       _email = masters[_index].email;
+       _phone = masters[_index].phone;
+       _ID = masters[_index].ID;
+       
+   }
+   
+   function changeMaster(uint _PedigreeID, uint _changeID) public
+   {
+       if(msg.sender != owner)
+       {
+           return;
+       }
+       pedigrees[_PedigreeID].masterID = _changeID;
+   }
+   
+   function getIndex() public constant returns(uint _numPedigrees,uint _numMasters) 
+   {
+       _numPedigrees = numPedigrees;
+       _numMasters = numMasters;
+   }
+   
+
+
 }
